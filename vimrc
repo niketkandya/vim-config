@@ -18,7 +18,11 @@ if $TERM =~ '256color'
 elseif $TERM =~ '^xterm$'
   set t_Co=256
 endif
-colorscheme molokai
+
+syntax enable
+set background=dark
+"colorscheme molokai
+colorscheme solarized
 
 " Misc
 filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
@@ -47,6 +51,7 @@ set expandtab
 set tabstop=2
 set shiftwidth=2
 set textwidth=80
+set colorcolumn=+2
 set formatoptions-=t formatoptions+=croql
 
 " viminfo: remember certain things when we exit
@@ -180,6 +185,8 @@ nnoremap <silent> <Leader>gb :Gblame<CR>
 
 nnoremap <Leader>a :Ack 
 
+let g:snips_author = 'Niket Kandya'
+
 " Put a space around comment markers
 let g:NERDSpaceDelims = 1
 
@@ -193,6 +200,7 @@ let g:syntastic_mode_map = { 'mode': 'active',
                            \ 'active_filetypes': [],
                            \ 'passive_filetypes': ['tex', 'c', 'scss', 'html', 'scala'] }
 let g:syntastic_javascript_checkers = ['jsxhint']
+let g:syntastic_cpp_compiler_options = ['-std=c++11 -stdlib=libc++']
 let g:syntastic_quiet_messages = {"regex": 'assigned but unused variable'}
 
 let g:quickfixsigns_classes = ['qfl', 'vcsdiff', 'breakpoints']
@@ -210,7 +218,8 @@ let g:ctrlp_map = '<Leader>.'
 let g:ctrlp_custom_ignore = '/\.\|\.o\|\.so'
 let g:ctrlp_switch_buffer = 0
 let g:ctrlp_regexp = 1
-let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files']
+"let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files']
+let g:ctrlp_user_command = ['ag %s -l --nocolr -g ""']
 map <Leader>, :CtrlPMRU<CR>
 
 noremap \= :Tabularize /=<CR>
@@ -230,21 +239,14 @@ let g:ScreenShellInitialFocus = 'shell'
 let g:ScreenShellQuitOnVimExit = 0
 
 map <C-\> :ScreenShellVertical<CR>
-
-"""""""""""""""""""""""""
-" Ruby Stuff
-"""""""""""""""""""""""""
-command -nargs=? -complete=shellcmd W  :w | :call ScreenShellSend("load '".@%."';")
-map <Leader>r :w<CR> :call ScreenShellSend("rspec ".@% . ':' . line('.'))<CR>
-map <Leader>e :w<CR> :call ScreenShellSend("cucumber --format=pretty ".@% . ':' . line('.'))<CR>
-map <Leader>w :w<CR> :call ScreenShellSend("break ".@% . ':' . line('.'))<CR>
-map <Leader>m :w<CR> :call ScreenShellSend("\e[A")<CR>
+map <C-;> :ScreenShellVertical<CR>
 
 """""""""""""""""""""""""
 " Cscope
 """""""""""""""""""""""""
 if has("cscope")
   " Use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
+  set nocscopeverbose
   set cscopetag
 
   " Check cscope for definition of a symbol before checking ctags. Set to 1 if
@@ -257,7 +259,6 @@ if has("cscope")
   endif
 
   " Show msg when any other cscope db is added
-  set cscopeverbose
 end
 
 """""""""""""""""""""""""
@@ -274,7 +275,7 @@ let g:vim_json_syntax_conceal = 0
 
 "" Rainbow config
 let g:rainbow_conf = { 'ctermfgs': ['red', 'yellow', 'green', 'cyan', 'magenta', 'red', 'yellow', 'green', 'cyan', 'magenta'] }
-let g:rainbow_matching_filetypes = ['lisp', 'scheme', 'clojure', 'javascript', 'html']
+let g:rainbow_matching_filetypes = ['c', 'lisp', 'scheme', 'clojure', 'javascript', 'html']
 
 function s:load()
   if count(g:rainbow_matching_filetypes, &ft) > 0
@@ -287,6 +288,39 @@ augroup rainbow
   autocmd BufNewFile,BufReadPost,FilterReadPost,FileReadPost,Syntax * nested call s:load()
 augroup END
 
-" fix for vim-javascript + rainbow incompatibility
-autocmd FileType javascript syntax clear jsFuncBlock
-set nocursorline
+let g:neocomplete#enable_at_startup = 1
+
+let g:ackprg = 'ag --nogroup --nocolor --column'
+if executable('ag')
+      " Note we extract the column as well as the file and line number
+      set grepprg=ag\ --nogroup\ --nocolor\ --column
+      set grepformat=%f:%l:%c%m
+endif
+
+"nnoremap
+nnoremap <Leader>a :Ag <C-R>=expand("<cword>")<CR><CR>
+
+"Natural split directions
+set splitbelow
+set splitright
+
+"Split navigation
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+map <leader><Left> :wincmd h<CR>
+map <leader><Down> :wincmd j<CR>
+map <leader><Up> :wincmd k<CR>
+map <leader><Right> :wincmd l<CR>
+
+map <F7> :botright cwindow<CR>
+map <F5> :cprev<CR>
+map <F6> :cnext<CR>
+
+cmap w!! w !sudo tee > /dev/null %
+
+set shellslash
+set grepprg=grep\ -nH\ $*
+let g:tex_flavor='latex'
