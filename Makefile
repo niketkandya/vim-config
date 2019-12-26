@@ -35,11 +35,5 @@ $(HOME)/.%: %
 	ln -fs $(PWD)/$< $@
 
 install: $(clearfiles) $(TARGETS)
-	git submodule update --init
-
-update:
-	git pull
-	git submodule sync
-	git submodule update --init
 
 .PHONY: install update clean_mine

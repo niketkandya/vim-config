@@ -1,11 +1,28 @@
 """""""""""""""""""""""""
+" Vim-Plug
+"""""""""""""""""""""""""
+call plug#begin('~/.vim/plugged')
+
+Plug 'scrooloose/nerdtree' | Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-fugitive' | Plug 'airblade/vim-gitgutter'
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+Plug 'altercation/vim-colors-solarized'
+Plug 'junegunn/fzf.vim'
+Plug 'chazy/cscope_maps'
+Plug 'sjl/gundo.vim'
+Plug 'majutsushi/tagbar'
+Plug 'tpope/vim-surround'
+""Plug 'valloric/youcompleteme'
+Plug 'tpope/vim-repeat'
+Plug 'godlygeek/tabular'
+Plug 'ervandew/supertab'
+Plug 'ervandew/screen'
+
+call plug#end()
+
+"""""""""""""""""""""""""
 " Basic features
 """""""""""""""""""""""""
-let pathogen_disabled = []
-if !has('gui_running')
-  call add(g:pathogen_disabled, 'css-color')
-endif
-call pathogen#infect()
 
 " Display options
 syntax on
@@ -21,8 +38,7 @@ endif
 
 syntax enable
 set background=dark
-"colorscheme molokai
-colorscheme solarized
+"colorscheme solarized
 
 " Misc
 filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
@@ -39,6 +55,9 @@ set scrolloff=3                 " Start scrolling 3 lines before the horizontal 
 set visualbell t_vb=            " Disable error bells
 set shortmess+=A                " Always edit file, even when swap file is found
 set foldlevelstart=99
+set shellslash
+set grepprg=grep\ -nH\ $*
+set laststatus=2
 
 " up/down on displayed lines, not real lines. More useful than painful.
 noremap k gk
@@ -84,12 +103,6 @@ set hlsearch
 set incsearch
 set showmatch
 
-" to_html settings
-let html_number_lines = 1
-let html_ignore_folding = 1
-let html_use_css = 1
-let xml_use_xhtml = 1
-
 " When opening a file, always jump to the last cursor position
 autocmd BufReadPost *
     \ if line("'\"") > 0 && line ("'\"") <= line("$") |
@@ -99,6 +112,10 @@ autocmd BufReadPost *
 
 " After 4s of inactivity, check for external file modifications on next keyrpress
 au CursorHold * checktime
+
+"Natural split directions
+set splitbelow
+set splitright
 
 """""""""""""""""""""""""
 " Keybindings
@@ -161,19 +178,27 @@ noremap <S-k> gJ
 " Write file when you forget to use sudo
 cmap w!! w !sudo tee % >/dev/null
 
+"Split navigation
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+map <leader><Left> :wincmd h<CR>
+map <leader><Down> :wincmd j<CR>
+map <leader><Up> :wincmd k<CR>
+map <leader><Right> :wincmd l<CR>
+map <F7> :botright cwindow<CR>
+map <F5> :cprev<CR>
+map <F6> :cnext<CR>
+
+
 """""""""""""""""""""""""
 " Plugins
 """""""""""""""""""""""""
-nnoremap <Leader>b :BufSurfBack<cr>
-nnoremap <Leader>f :BufSurfForward<cr>
-
 nnoremap <S-u> :GundoToggle<CR>
 let g:gundo_close_on_revert=1
 
-
-" TODO Merge the NERDTreeFind with Toggle inteilligently.
 nnoremap <C-g> :NERDTreeToggle<cr>
-
 let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$', '\.o$',
                    \ '\.so$', '\.egg$', '^\.git$', '\.cmi', '\.cmo' ]
 let NERDTreeHighlightCursorline=1
@@ -183,44 +208,8 @@ let NERDTreeShowFiles=1
 nnoremap <silent> <Leader>gd :Gdiff<CR>
 nnoremap <silent> <Leader>gb :Gblame<CR>
 
-nnoremap <Leader>a :Ack 
-
-let g:snips_author = 'Niket Kandya'
-
 " Put a space around comment markers
 let g:NERDSpaceDelims = 1
-
-nnoremap <C-y> :YRShow<cr>
-let g:yankring_history_dir = '$HOME/.vim'
-let g:yankring_manual_clipboard_check = 0
-
-let g:syntastic_enable_signs=1
-let g:syntastic_auto_loc_list=1
-let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'active_filetypes': [],
-                           \ 'passive_filetypes': ['tex', 'c', 'scss', 'html', 'scala'] }
-let g:syntastic_javascript_checkers = ['jsxhint']
-let g:syntastic_cpp_compiler_options = ['-std=c++11 -stdlib=libc++']
-let g:syntastic_quiet_messages = {"regex": 'assigned but unused variable'}
-
-let g:quickfixsigns_classes = ['qfl', 'vcsdiff', 'breakpoints']
-let g:quickfixsign_use_dummy = 0
-" Added BufEnter event to refresh when we come back to a file
-let g:quickfixsigns_class_vcsdiff = { 'sign': '*quickfixsigns#vcsdiff#Signs',
-                                    \ 'get': 'quickfixsigns#vcsdiff#GetList(%s)',
-                                    \ 'event': ['BufEnter', 'BufRead', 'BufWritePost'],
-                                    \ 'level': 6}
-
-let g:Powerline_symbols = 'unicode'
-set laststatus=2
-
-let g:ctrlp_map = '<Leader>.'
-let g:ctrlp_custom_ignore = '/\.\|\.o\|\.so'
-let g:ctrlp_switch_buffer = 0
-let g:ctrlp_regexp = 1
-"let g:ctrlp_user_command = ['.git/', 'cd %s && git ls-files']
-let g:ctrlp_user_command = ['ag %s -l --nocolr -g ""']
-map <Leader>, :CtrlPMRU<CR>
 
 noremap \= :Tabularize /=<CR>
 noremap \: :Tabularize /^[^:]*:\zs/l0l1<CR>
@@ -267,15 +256,11 @@ end
 so ~/.vim/vimrc.mine
 
 " TODO raise contrast for comments
-
 autocmd FileType markdown setlocal syntax=off
-
-let g:vim_json_syntax_conceal = 0
-
 
 "" Rainbow config
 let g:rainbow_conf = { 'ctermfgs': ['red', 'yellow', 'green', 'cyan', 'magenta', 'red', 'yellow', 'green', 'cyan', 'magenta'] }
-let g:rainbow_matching_filetypes = ['c', 'lisp', 'scheme', 'clojure', 'javascript', 'html']
+let g:rainbow_matching_filetypes = ['c'] 
 
 function s:load()
   if count(g:rainbow_matching_filetypes, &ft) > 0
@@ -287,40 +272,3 @@ augroup rainbow
   autocmd!
   autocmd BufNewFile,BufReadPost,FilterReadPost,FileReadPost,Syntax * nested call s:load()
 augroup END
-
-let g:neocomplete#enable_at_startup = 1
-
-let g:ackprg = 'ag --nogroup --nocolor --column'
-if executable('ag')
-      " Note we extract the column as well as the file and line number
-      set grepprg=ag\ --nogroup\ --nocolor\ --column
-      set grepformat=%f:%l:%c%m
-endif
-
-"nnoremap
-nnoremap <Leader>a :Ag <C-R>=expand("<cword>")<CR><CR>
-
-"Natural split directions
-set splitbelow
-set splitright
-
-"Split navigation
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
-
-map <leader><Left> :wincmd h<CR>
-map <leader><Down> :wincmd j<CR>
-map <leader><Up> :wincmd k<CR>
-map <leader><Right> :wincmd l<CR>
-
-map <F7> :botright cwindow<CR>
-map <F5> :cprev<CR>
-map <F6> :cnext<CR>
-
-cmap w!! w !sudo tee > /dev/null %
-
-set shellslash
-set grepprg=grep\ -nH\ $*
-let g:tex_flavor='latex'
