@@ -38,7 +38,7 @@ endif
 
 syntax enable
 set background=dark
-"colorscheme solarized
+colorscheme solarized
 
 " Misc
 filetype plugin indent on       " Do filetype detection and load custom file plugins and indent files
