@@ -25,6 +25,7 @@ call plug#end()
 """""""""""""""""""""""""
 
 " Display options
+set nocompatible
 syntax on
 set cursorline
 set number
@@ -253,7 +254,7 @@ end
 """""""""""""""""""""""""
 " Local config
 """""""""""""""""""""""""
-so ~/.vim/vimrc.mine
+source ~/.vim/vimrc.mine
 
 " TODO raise contrast for comments
 autocmd FileType markdown setlocal syntax=off
@@ -272,3 +273,9 @@ augroup rainbow
   autocmd!
   autocmd BufNewFile,BufReadPost,FilterReadPost,FileReadPost,Syntax * nested call s:load()
 augroup END
+
+"""""""""""""""""""""""""
+" Google config
+"""""""""""""""""""""""""
+"General goodness
+source /usr/share/vim/google/google.vim
